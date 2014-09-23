@@ -5,6 +5,7 @@
 # qt files
 *.pro.user*
 .qmake*
+Makefile
 # Compiled Dynamic libraries
 *.so
 *.dylib
