@@ -5,6 +5,10 @@
 # qt files
 *.pro.user*
 .qmake*
+moc/
+moc_*
+# shadow build directories
+build-*
 Makefile
 # Compiled Dynamic libraries
 *.so
