@@ -265,7 +265,7 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   // we then switch on the key value and set the camera in the GLWindow
   switch (_event->key())
   {
-  // escape key to quite
+  // escape key to quit
   case Qt::Key_Escape : QGuiApplication::exit(EXIT_SUCCESS); break;
   // turn on wirframe rendering
   case Qt::Key_W : glPolygonMode(GL_FRONT_AND_BACK,GL_LINE); break;

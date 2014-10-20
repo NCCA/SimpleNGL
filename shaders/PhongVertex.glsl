@@ -13,15 +13,6 @@ uniform vec3 viewerPos;
 out vec3 fragmentNormal;
 
 
-struct Materials
-{
-  vec3 ambient;
-  vec4 diffuse;
-  vec4 specular;
-  float shininess;
-};
-
-
 struct Lights
 {
   vec4 position;
@@ -33,8 +24,7 @@ struct Lights
   float quadraticAttenuation;
   float linearAttenuation;
 };
-// our material
-uniform Materials material;
+
 // array of lights
 uniform Lights light;
 // direction of the lights used for shading
