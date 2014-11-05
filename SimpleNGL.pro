@@ -45,7 +45,7 @@ CONFIG += console
 	QMAKE_EXTRA_TARGETS += first copydata
 }
 # use this to suppress some warning from boost
-QMAKE_CXXFLAGS_WARN_ON += "-Wno-unused-parameter"
+unix*:QMAKE_CXXFLAGS_WARN_ON += "-Wno-unused-parameter"
 # basic compiler flags (not all appropriate for all platforms)
 QMAKE_CXXFLAGS+= -msse -msse2 -msse3
 macx:QMAKE_CXXFLAGS+= -arch x86_64
@@ -77,6 +77,7 @@ win32: {
         DEFINES += WIN32
         DEFINES+=_WIN32
         DEFINES+=_USE_MATH_DEFINES
+        LIBS+= -lopengl32
         LIBS += -LC:/NGL/lib/ -lNGL
         DEFINES+=NO_DLL
 }

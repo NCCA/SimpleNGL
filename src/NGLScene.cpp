@@ -13,19 +13,19 @@
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief the increment for x/y translation with mouse movement
 //----------------------------------------------------------------------------------------------------------------------
-const static float INCREMENT=0.01;
+const static float INCREMENT=0.01f;
 //----------------------------------------------------------------------------------------------------------------------
 /// @brief the increment for the wheel zoom
 //----------------------------------------------------------------------------------------------------------------------
-const static float ZOOM=0.1;
+const static float ZOOM=0.1f;
 
 NGLScene::NGLScene(QWindow *_parent) : OpenGLWindow(_parent)
 {
   // re-size the widget to that of the parent (in this case the GLFrame passed in on construction)
   m_rotate=false;
   // mouse rotation values set to 0
-  m_spinXFace=0;
-  m_spinYFace=0;
+  m_spinXFace=0.0f;
+  m_spinYFace=0.0f;
   setTitle("Qt5 Simple NGL Demo");
  
 }
@@ -47,7 +47,7 @@ void NGLScene::resizeEvent(QResizeEvent *_event )
   // etc by using the pixel ratio as a multiplyer
   glViewport(0,0,width()*devicePixelRatio(),height()*devicePixelRatio());
   // now set the camera size values as the screen size has changed
-  m_cam->setShape(45,(float)width()/height(),0.05,350);
+  m_cam->setShape(45.0f,(float)width()/height(),0.05f,350.0f);
   renderLater();
   }
 }
@@ -107,7 +107,7 @@ void NGLScene::initialize()
   m_cam= new ngl::Camera(from,to,up);
   // set the shape using FOV 45 Aspect Ratio based on Width and Height
   // The final two are near and far clipping planes of 0.5 and 10
-  m_cam->setShape(45,(float)720.0/576.0,0.05,350);
+  m_cam->setShape(45.0f,(float)720.0/576.0f,0.05f,350.0f);
   shader->setShaderParam3f("viewerPos",m_cam->getEye().m_x,m_cam->getEye().m_y,m_cam->getEye().m_z);
   // now create our light this is done after the camera so we can pass the
   // transpose of the projection matrix to the light to do correct eye space
