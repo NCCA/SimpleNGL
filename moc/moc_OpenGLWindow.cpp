@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'OpenGLWindow.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.2.0)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'OpenGLWindow.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.2.0. It"
+#error "This file was generated using the moc from 5.3.2. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,12 +20,12 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_OpenGLWindow_t {
     QByteArrayData data[4];
-    char stringdata[37];
+    char stringdata[36];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    offsetof(qt_meta_stringdata_OpenGLWindow_t, stringdata) + ofs \
-        - idx * sizeof(QByteArrayData) \
+    qptrdiff(offsetof(qt_meta_stringdata_OpenGLWindow_t, stringdata) + ofs \
+        - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_OpenGLWindow_t qt_meta_stringdata_OpenGLWindow = {
     {
@@ -34,7 +34,7 @@ QT_MOC_LITERAL(1, 13, 11),
 QT_MOC_LITERAL(2, 25, 0),
 QT_MOC_LITERAL(3, 26, 9)
     },
-    "OpenGLWindow\0renderLater\0\0renderNow\0"
+    "OpenGLWindow\0renderLater\0\0renderNow"
 };
 #undef QT_MOC_LITERAL
 
@@ -52,8 +52,8 @@ static const uint qt_meta_data_OpenGLWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   24,    2, 0x0a,
-       3,    0,   25,    2, 0x0a,
+       1,    0,   24,    2, 0x0a /* Public */,
+       3,    0,   25,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void,

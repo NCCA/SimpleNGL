@@ -10,7 +10,7 @@ uniform bool Normalize;
 // the eye position of the camera
 uniform vec3 viewerPos;
 /// @brief the current fragment normal for the vert being processed
-out vec3 fragmentNormal;
+out  vec3 fragmentNormal;
 
 
 struct Lights
@@ -68,5 +68,4 @@ lightDir=vec3(light.position.xyz-eyeCord.xyz);
 dist = length(lightDir);
 lightDir/= dist;
 halfVector = normalize(eyeDirection + lightDir);
-
 }

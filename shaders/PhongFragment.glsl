@@ -2,7 +2,7 @@
 /// @brief our output fragment colour
 layout (location =0) out vec4 fragColour;
 /// @brief[in] the vertex normal
-in vec3 fragmentNormal;
+in  vec3 fragmentNormal;
 /// @brief material structure
 struct Materials
 {
