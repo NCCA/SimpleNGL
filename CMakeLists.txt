@@ -1,12 +1,16 @@
 cmake_minimum_required(VERSION 2.8.11)
 # Name of the project
-project(SimpleNGL)
+set(PROJECT_NAME SimpleNGL)
+project(${PROJECT_NAME})
 #Bring the headers into the project (local ones)
 include_directories(include $ENV{HOME}/NGL/include)
 
 #the file(GLOB...) allows for wildcard additions of our src dir
-set(SOURCES src/main.cpp  src/NGLScene.cpp  src/OpenGLWindow.cpp
-			include/NGLScene.h  include/OpenGLWindow.h
+set(SOURCES ${PROJECT_SOURCE_DIR}/src/main.cpp  
+			${PROJECT_SOURCE_DIR}/src/NGLScene.cpp  
+			${PROJECT_SOURCE_DIR}/src/OpenGLWindow.cpp
+			${PROJECT_SOURCE_DIR}/include/NGLScene.h  
+			${PROJECT_SOURCE_DIR}/include/OpenGLWindow.h
 
 )
 
@@ -23,6 +27,9 @@ endif()
 #disable -rdynamic
 SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
+# define this if you want to include the stanford data sets
+# these are very big and make compilation time huge
+add_definitions(-DADDLARGEMODELS)
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -34,8 +41,7 @@ add_definitions(-O2 -D_FILE_OFFSET_BITS=64 -fPIC)
 
 # now add NGL specific values
 set ( PROJECT_LINK_LIBS -lNGL -lGL)
-link_directories( ~/NGL/lib )
-include_directories(~/NGL/include/)
+link_directories( $ENV{HOME}/NGL/lib )
 # as NGL uses Qt we need to define this flag
 add_definitions(-DQT5BUILD)
 # NGL also needs the OpenGL framework from Qt so add it
@@ -46,7 +52,6 @@ find_package(Qt5Core)
 
 
 # add exe and link libs this must be after the other defines
-add_executable(SimpleNGL ${SOURCES})
-target_link_libraries(SimpleNGL Qt5::OpenGL Qt5::Core Qt5::Gui Qt5::Widgets )
-target_link_libraries(SimpleNGL ${PROJECT_LINK_LIBS} )
+add_executable(${PROJECT_NAME} ${SOURCES})
+target_link_libraries(${PROJECT_NAME} ${PROJECT_LINK_LIBS} Qt5::OpenGL Qt5::Core Qt5::Gui Qt5::Widgets )
 
