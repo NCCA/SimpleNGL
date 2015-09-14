@@ -71,7 +71,6 @@ return ambient + diffuse + specular;
 }
 
 
-
 void main ()
 {
 
