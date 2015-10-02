@@ -1,4 +1,4 @@
-#version 330 core
+#version 410 core
 /// @brief the vertex passed in
 layout (location = 0) in vec3 inVert;
 /// @brief the normal passed in
