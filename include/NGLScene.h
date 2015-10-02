@@ -1,10 +1,11 @@
 #ifndef NGLSCENE_H__
 #define NGLSCENE_H__
-#include "OpenGLWindow.h"
+
 #include <ngl/Camera.h>
 #include <ngl/Colour.h>
 #include <ngl/Light.h>
 #include <ngl/Text.h>
+#include <QOpenGLWindow>
 //----------------------------------------------------------------------------------------------------------------------
 /// @file NGLScene.h
 /// @brief this class inherits from the Qt OpenGLWindow and allows us to use NGL to draw OpenGL
@@ -18,14 +19,15 @@
 /// put in this file
 //----------------------------------------------------------------------------------------------------------------------
 
-class NGLScene : public OpenGLWindow
+class NGLScene : public QOpenGLWindow
 {
+  Q_OBJECT
   public:
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief ctor for our NGL drawing class
     /// @param [in] parent the parent window to the class
     //----------------------------------------------------------------------------------------------------------------------
-    NGLScene(QWindow *_parent=0);
+    NGLScene();
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief dtor must close down ngl and release OpenGL resources
     //----------------------------------------------------------------------------------------------------------------------
@@ -34,11 +36,15 @@ class NGLScene : public OpenGLWindow
     /// @brief the initialize class is called once when the window is created and we have a valid GL context
     /// use this to setup any default GL stuff
     //----------------------------------------------------------------------------------------------------------------------
-    void initialize();
+    void initializeGL();
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief this is called everytime we want to draw the scene
     //----------------------------------------------------------------------------------------------------------------------
-    void render();
+    void paintGL();
+    //----------------------------------------------------------------------------------------------------------------------
+    /// @brief this is called everytime we want to draw the scene
+    //----------------------------------------------------------------------------------------------------------------------
+    void resizeGL(int w, int h);
 
 private:
     //----------------------------------------------------------------------------------------------------------------------
@@ -93,11 +99,6 @@ private:
     /// @brief method to load transform matrices to the shader
     //----------------------------------------------------------------------------------------------------------------------
     void loadMatricesToShader();
-    //----------------------------------------------------------------------------------------------------------------------
-    /// @brief Qt Event called when the window is re-sized
-    /// @param [in] _event the Qt event to query for size etc
-    //----------------------------------------------------------------------------------------------------------------------
-    void resizeEvent(QResizeEvent *_event);
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief Qt Event called when a key is pressed
     /// @param [in] _event the Qt event to query for size etc
