@@ -33,19 +33,17 @@ NGLScene::NGLScene()
 
 NGLScene::~NGLScene()
 {
-  ngl::NGLInit *Init = ngl::NGLInit::instance();
   std::cout<<"Shutting down NGL, removing VAO's and Shaders\n";
   delete m_light;
-  Init->NGLQuit();
 }
 
 
 
-void NGLScene::resizeGL(int w, int h)
+void NGLScene::resizeGL(int _w, int _h)
 {
   // set the viewport for openGL we need to take into account retina display
   // etc by using the pixel ratio as a multiplyer
-  glViewport(0,0,w*devicePixelRatio(),h*devicePixelRatio());
+  glViewport(0,0,_w*devicePixelRatio(),_h*devicePixelRatio());
   // now set the camera size values as the screen size has changed
   m_cam->setShape(45.0f,(float)width()/height(),0.05f,350.0f);
   update();
