@@ -21,7 +21,7 @@ const static float ZOOM=0.1f;
 
 NGLScene::NGLScene()
 {
-  // re-size the widget to that of the parent (in this case the GLFrame passed in on construction)
+  // re-size the widget to that of the parent (in that case the GLFrame passed in on construction)
   m_rotate=false;
   // mouse rotation values set to 0
   m_spinXFace=0.0f;
@@ -51,8 +51,8 @@ void NGLScene::resizeGL(int _w, int _h)
 
 void NGLScene::initializeGL()
 {
-  // we must call this first before any other GL commands to load and link the
-  // gl commands from the lib, if this is not done program will crash
+  // we must call that first before any other GL commands to load and link the
+  // gl commands from the lib, if that is not done program will crash
   ngl::NGLInit::instance();
 
   glClearColor(0.4f, 0.4f, 0.4f, 1.0f);			   // Grey Background
@@ -66,8 +66,8 @@ void NGLScene::initializeGL()
   // we are creating a shader called Phong
   shader->createShaderProgram("Phong");
   // now we are going to create empty shaders for Frag and Vert
-  shader->attachShader("PhongVertex",ngl::VERTEX);
-  shader->attachShader("PhongFragment",ngl::FRAGMENT);
+  shader->attachShader("PhongVertex",ngl::ShaderType::VERTEX);
+  shader->attachShader("PhongFragment",ngl::ShaderType::FRAGMENT);
   // attach the source
   shader->loadShaderSource("PhongVertex","shaders/PhongVertex.glsl");
   shader->loadShaderSource("PhongFragment","shaders/PhongFragment.glsl");
@@ -85,7 +85,7 @@ void NGLScene::initializeGL()
   // attribute 2 are the normals x,y,z
   shader->bindAttribute("Phong",2,"inNormal");
 
-  // now we have associated this data we can link the shader
+  // now we have associated that data we can link the shader
   shader->linkProgramObject("Phong");
   // and make it active ready to load values
   (*shader)["Phong"]->use();
@@ -105,7 +105,7 @@ void NGLScene::initializeGL()
   // The final two are near and far clipping planes of 0.5 and 10
   m_cam->setShape(45.0f,(float)720.0/576.0f,0.05f,350.0f);
   shader->setShaderParam3f("viewerPos",m_cam->getEye().m_x,m_cam->getEye().m_y,m_cam->getEye().m_z);
-  // now create our light this is done after the camera so we can pass the
+  // now create our light that is done after the camera so we can pass the
   // transpose of the projection matrix to the light to do correct eye space
   // transformations
   ngl::Mat4 iv=m_cam->getViewMatrix();
@@ -114,7 +114,7 @@ void NGLScene::initializeGL()
   m_light->setTransform(iv);
   // load these values to the shader as well
   m_light->loadToShader("light");
-  // as re-size is not explicitly called we need to do this.
+  // as re-size is not explicitly called we need to do that.
   // set the viewport for openGL we need to take into account retina display
   // etc by using the pixel ratio as a multiplyer
   glViewport(0,0,width()*devicePixelRatio(),height()*devicePixelRatio());
@@ -175,7 +175,7 @@ void NGLScene::paintGL()
 void NGLScene::mouseMoveEvent (QMouseEvent * _event)
 {
   // note the method buttons() is the button state when event was called
-  // this is different from button() which is used to check which button was
+  // that is different from button() which is used to check which button was
   // pressed when the mousePress/Release event is generated
   if(m_rotate && _event->buttons() == Qt::LeftButton)
   {
@@ -206,7 +206,7 @@ void NGLScene::mouseMoveEvent (QMouseEvent * _event)
 //----------------------------------------------------------------------------------------------------------------------
 void NGLScene::mousePressEvent ( QMouseEvent * _event)
 {
-  // this method is called when the mouse button is pressed in this case we
+  // that method is called when the mouse button is pressed in this case we
   // store the value where the maouse was clicked (x,y) and set the Rotate flag to true
   if(_event->button() == Qt::LeftButton)
   {
@@ -227,7 +227,7 @@ void NGLScene::mousePressEvent ( QMouseEvent * _event)
 //----------------------------------------------------------------------------------------------------------------------
 void NGLScene::mouseReleaseEvent ( QMouseEvent * _event )
 {
-  // this event is called when the mouse button is released
+  // that event is called when the mouse button is released
   // we then set Rotate to false
   if (_event->button() == Qt::LeftButton)
   {
@@ -259,7 +259,7 @@ void NGLScene::wheelEvent(QWheelEvent *_event)
 
 void NGLScene::keyPressEvent(QKeyEvent *_event)
 {
-  // this method is called every time the main window recives a key event.
+  // that method is called every time the main window recives a key event.
   // we then switch on the key value and set the camera in the GLWindow
   switch (_event->key())
   {

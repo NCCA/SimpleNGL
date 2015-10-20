@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     format.setMajorVersion(4);
     format.setMinorVersion(1);
   #else
-    // with luck we have the latest GL version so set to this
+    // with luck we have the latest GL version so set to that
     format.setMajorVersion(4);
     format.setMinorVersion(5);
   #endif
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
   format.setProfile(QSurfaceFormat::CoreProfile);
   // now set the depth buffer to 24 bits
   format.setDepthBufferSize(24);
-  // set this as the default format for all windows
+  // set that as the default format for all windows
   QSurfaceFormat::setDefaultFormat(format);
 
   // now we are going to create our scene window
