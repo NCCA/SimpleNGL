@@ -27,25 +27,24 @@ NGLScene::NGLScene()
   m_spinXFace=0.0f;
   m_spinYFace=0.0f;
   setTitle("Qt5 Simple NGL Demo");
- 
+  m_width=1024;
+  m_height=720;
 }
 
 
 NGLScene::~NGLScene()
 {
   std::cout<<"Shutting down NGL, removing VAO's and Shaders\n";
-  delete m_light;
 }
 
 
 
-void NGLScene::resizeGL(int _w, int _h)
+void NGLScene::resizeGL(QResizeEvent *_event)
 {
-  // set the viewport for openGL we need to take into account retina display
-  // etc by using the pixel ratio as a multiplyer
-  glViewport(0,0,_w*devicePixelRatio(),_h*devicePixelRatio());
+  m_width=_event->size().width()*devicePixelRatio();
+  m_height=_event->size().height()*devicePixelRatio();
   // now set the camera size values as the screen size has changed
-  m_cam->setShape(45.0f,(float)width()/height(),0.05f,350.0f);
+  m_cam.setShape(45.0f,(float)width()/height(),0.05f,350.0f);
   update();
 }
 
@@ -90,7 +89,7 @@ void NGLScene::initializeGL()
   // and make it active ready to load values
   (*shader)["Phong"]->use();
   // the shader will use the currently active material and light0 so set them
-  ngl::Material m(ngl::GOLD);
+  ngl::Material m(ngl::STDMAT::GOLD);
   // load our material values to the shader into the structure material (see Vertex shader)
   m.loadToShader("material");
   // Now we will create a basic Camera from the graphics library
@@ -100,24 +99,22 @@ void NGLScene::initializeGL()
   ngl::Vec3 to(0,0,0);
   ngl::Vec3 up(0,1,0);
   // now load to our new camera
-  m_cam= new ngl::Camera(from,to,up);
+  m_cam.set(from,to,up);
   // set the shape using FOV 45 Aspect Ratio based on Width and Height
   // The final two are near and far clipping planes of 0.5 and 10
-  m_cam->setShape(45.0f,(float)720.0/576.0f,0.05f,350.0f);
-  shader->setShaderParam3f("viewerPos",m_cam->getEye().m_x,m_cam->getEye().m_y,m_cam->getEye().m_z);
+  m_cam.setShape(45.0f,(float)720.0/576.0f,0.05f,350.0f);
+  shader->setUniform("viewerPos",m_cam.getEye().m_x,m_cam.getEye().m_y,m_cam.getEye().m_z);
   // now create our light that is done after the camera so we can pass the
   // transpose of the projection matrix to the light to do correct eye space
   // transformations
-  ngl::Mat4 iv=m_cam->getViewMatrix();
+  ngl::Mat4 iv=m_cam.getViewMatrix();
   iv.transpose();
-  m_light = new ngl::Light(ngl::Vec3(-2,5,2),ngl::Colour(1,1,1,1),ngl::Colour(1,1,1,1),ngl::POINTLIGHT );
-  m_light->setTransform(iv);
+  ngl::Light light(ngl::Vec3(-2,5,2),ngl::Colour(1,1,1,1),ngl::Colour(1,1,1,1),ngl::LightModes::POINTLIGHT );
+  light.setTransform(iv);
   // load these values to the shader as well
-  m_light->loadToShader("light");
+  light.loadToShader("light");
   // as re-size is not explicitly called we need to do that.
   // set the viewport for openGL we need to take into account retina display
-  // etc by using the pixel ratio as a multiplyer
-  glViewport(0,0,width()*devicePixelRatio(),height()*devicePixelRatio());
 }
 
 
@@ -130,8 +127,8 @@ void NGLScene::loadMatricesToShader()
   ngl::Mat3 normalMatrix;
   ngl::Mat4 M;
   M=m_mouseGlobalTX;
-  MV=  M*m_cam->getViewMatrix();
-  MVP= M*m_cam->getVPMatrix();
+  MV=  M*m_cam.getViewMatrix();
+  MVP= M*m_cam.getVPMatrix();
   normalMatrix=MV;
   normalMatrix.inverse();
   shader->setShaderParamFromMat4("MV",MV);
@@ -142,6 +139,7 @@ void NGLScene::loadMatricesToShader()
 
 void NGLScene::paintGL()
 {
+  glViewport(0,0,m_width,m_height);
   // clear the screen and depth buffer
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
