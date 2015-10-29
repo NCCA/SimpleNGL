@@ -45,7 +45,6 @@ void NGLScene::resizeGL(QResizeEvent *_event)
   m_height=_event->size().height()*devicePixelRatio();
   // now set the camera size values as the screen size has changed
   m_cam.setShape(45.0f,(float)width()/height(),0.05f,350.0f);
-  update();
 }
 
 void NGLScene::initializeGL()
@@ -53,7 +52,6 @@ void NGLScene::initializeGL()
   // we must call that first before any other GL commands to load and link the
   // gl commands from the lib, if that is not done program will crash
   ngl::NGLInit::instance();
-
   glClearColor(0.4f, 0.4f, 0.4f, 1.0f);			   // Grey Background
   // enable depth testing for drawing
   glEnable(GL_DEPTH_TEST);
