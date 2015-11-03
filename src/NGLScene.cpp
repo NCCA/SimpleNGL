@@ -27,8 +27,6 @@ NGLScene::NGLScene()
   m_spinXFace=0.0f;
   m_spinYFace=0.0f;
   setTitle("Qt5 Simple NGL Demo");
-  m_width=1024;
-  m_height=720;
 }
 
 
@@ -39,7 +37,7 @@ NGLScene::~NGLScene()
 
 
 
-void NGLScene::resizeGL(QResizeEvent *_event)
+void NGLScene::resizeEvent(QResizeEvent *_event)
 {
   m_width=_event->size().width()*devicePixelRatio();
   m_height=_event->size().height()*devicePixelRatio();
