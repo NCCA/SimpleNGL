@@ -36,18 +36,19 @@ NGLScene::~NGLScene()
 
 void NGLScene::resizeGL(QResizeEvent *_event)
 {
-  m_width=_event->size().width()*devicePixelRatio();
-  m_height=_event->size().height()*devicePixelRatio();
+  m_width=static_cast<int>(_event->size().width()*devicePixelRatio());
+  m_height=static_cast<int>(_event->size().height()*devicePixelRatio());
   // now set the camera size values as the screen size has changed
-  m_cam.setShape(45.0f,(float)width()/height(),0.05f,350.0f);
+  m_cam.setShape(45.0f,static_cast<float>(width())/height(),0.05f,350.0f);
 }
 
 void NGLScene::resizeGL(int _w , int _h)
 {
-  m_cam.setShape(45.0f,(float)_w/_h,0.05f,350.0f);
-  m_width=_w*devicePixelRatio();
-  m_height=_h*devicePixelRatio();
+  m_cam.setShape(45.0f,static_cast<float>(_w)/_h,0.05f,350.0f);
+  m_width=static_cast<int>(_w*devicePixelRatio());
+  m_height=static_cast<int>(_h*devicePixelRatio());
 }
+
 
 void NGLScene::initializeGL()
 {
@@ -58,7 +59,9 @@ void NGLScene::initializeGL()
   // enable depth testing for drawing
   glEnable(GL_DEPTH_TEST);
   // enable multisampling for smoother drawing
+#ifndef USINGIOS_
   glEnable(GL_MULTISAMPLE);
+#endif
    // now to load the shader and set the values
   // grab an instance of shader manager
   ngl::ShaderLib *shader=ngl::ShaderLib::instance();
@@ -102,7 +105,7 @@ void NGLScene::initializeGL()
   m_cam.set(from,to,up);
   // set the shape using FOV 45 Aspect Ratio based on Width and Height
   // The final two are near and far clipping planes of 0.5 and 10
-  m_cam.setShape(45.0f,(float)720.0/576.0f,0.05f,350.0f);
+  m_cam.setShape(45.0f,720.0f/576.0f,0.05f,350.0f);
   shader->setUniform("viewerPos",m_cam.getEye().toVec3());
   // now create our light that is done after the camera so we can pass the
   // transpose of the projection matrix to the light to do correct eye space
@@ -113,8 +116,6 @@ void NGLScene::initializeGL()
   light.setTransform(iv);
   // load these values to the shader as well
   light.loadToShader("light");
-  // as re-size is not explicitly called we need to do that.
-  // set the viewport for openGL we need to take into account retina display
 }
 
 
@@ -179,8 +180,8 @@ void NGLScene::mouseMoveEvent (QMouseEvent * _event)
   {
     int diffx=_event->x()-m_origX;
     int diffy=_event->y()-m_origY;
-    m_spinXFace += (float) 0.5f * diffy;
-    m_spinYFace += (float) 0.5f * diffx;
+    m_spinXFace += static_cast<int>( 0.5f * diffy);
+    m_spinYFace += static_cast<int>( 0.5f * diffx);
     m_origX = _event->x();
     m_origY = _event->y();
     update();
@@ -189,8 +190,8 @@ void NGLScene::mouseMoveEvent (QMouseEvent * _event)
         // right mouse translate code
   else if(m_translate && _event->buttons() == Qt::RightButton)
   {
-    int diffX = (int)(_event->x() - m_origXPos);
-    int diffY = (int)(_event->y() - m_origYPos);
+    int diffX = static_cast<int>(_event->x() - m_origXPos);
+    int diffY = static_cast<int>(_event->y() - m_origYPos);
     m_origXPos=_event->x();
     m_origYPos=_event->y();
     m_modelPos.m_x += INCREMENT * diffX;
@@ -264,16 +265,17 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   // escape key to quit
   case Qt::Key_Escape : QGuiApplication::exit(EXIT_SUCCESS); break;
   // turn on wirframe rendering
+#ifndef USINGIOS_
+
   case Qt::Key_W : glPolygonMode(GL_FRONT_AND_BACK,GL_LINE); break;
   // turn off wire frame
   case Qt::Key_S : glPolygonMode(GL_FRONT_AND_BACK,GL_FILL); break;
+#endif
   // show full screen
   case Qt::Key_F : showFullScreen(); break;
   // show windowed
   case Qt::Key_N : showNormal(); break;
   default : break;
   }
-  // finally update the GLWindow and re-draw
-  //if (isExposed())
-    update();
+ update();
 }
