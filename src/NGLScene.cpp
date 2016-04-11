@@ -65,32 +65,31 @@ void NGLScene::initializeGL()
    // now to load the shader and set the values
   // grab an instance of shader manager
   ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  // we are creating a shader called Phong
-  shader->createShaderProgram("Phong");
+  // we are creating a shader called Phong to save typos
+  // in the code create some constexpr
+  constexpr auto shaderProgram="Phong";
+  constexpr auto vertexShader="PhongVertex";
+  constexpr auto fragShader="PhongFragment";
+  // create the shader program
+  shader->createShaderProgram(shaderProgram);
   // now we are going to create empty shaders for Frag and Vert
-  shader->attachShader("PhongVertex",ngl::ShaderType::VERTEX);
-  shader->attachShader("PhongFragment",ngl::ShaderType::FRAGMENT);
+  shader->attachShader(vertexShader,ngl::ShaderType::VERTEX);
+  shader->attachShader(fragShader,ngl::ShaderType::FRAGMENT);
   // attach the source
-  shader->loadShaderSource("PhongVertex","shaders/PhongVertex.glsl");
-  shader->loadShaderSource("PhongFragment","shaders/PhongFragment.glsl");
+  shader->loadShaderSource(vertexShader,"shaders/PhongVertex.glsl");
+  shader->loadShaderSource(fragShader,"shaders/PhongFragment.glsl");
   // compile the shaders
-  shader->compileShader("PhongVertex");
-  shader->compileShader("PhongFragment");
+  shader->compileShader(vertexShader);
+  shader->compileShader(fragShader);
   // add them to the program
-  shader->attachShaderToProgram("Phong","PhongVertex");
-  shader->attachShaderToProgram("Phong","PhongFragment");
-  // now bind the shader attributes for most NGL primitives we use the following
-  // layout attribute 0 is the vertex data (x,y,z)
-  shader->bindAttribute("Phong",0,"inVert");
-  // attribute 1 is the UV data u,v (if present)
-  shader->bindAttribute("Phong",1,"inUV");
-  // attribute 2 are the normals x,y,z
-  shader->bindAttribute("Phong",2,"inNormal");
+  shader->attachShaderToProgram(shaderProgram,vertexShader);
+  shader->attachShaderToProgram(shaderProgram,fragShader);
+
 
   // now we have associated that data we can link the shader
-  shader->linkProgramObject("Phong");
+  shader->linkProgramObject(shaderProgram);
   // and make it active ready to load values
-  (*shader)["Phong"]->use();
+  (*shader)[shaderProgram]->use();
   // the shader will use the currently active material and light0 so set them
   ngl::Material m(ngl::STDMAT::GOLD);
   // load our material values to the shader into the structure material (see Vertex shader)
