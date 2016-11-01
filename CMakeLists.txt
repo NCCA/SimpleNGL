@@ -23,7 +23,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	add_definitions(-DLINUX)
-	set ( PROJECT_LINK_LIBS -lNGL -lGL)
+	set ( PROJECT_LINK_LIBS -lNGL  -lGL)
 
 endif()
 
@@ -45,6 +45,7 @@ add_definitions(-O2 -D_FILE_OFFSET_BITS=64 -fPIC)
 
 
 # now add NGL specific values
+#set ( PROJECT_LINK_LIBS -lNGL )
 link_directories( $ENV{HOME}/NGL/lib )
 # as NGL uses Qt we need to define that flag
 add_definitions(-DQT5BUILD)
