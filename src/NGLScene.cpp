@@ -22,13 +22,7 @@ NGLScene::~NGLScene()
   std::cout << "Shutting down NGL, removing VAO's and Shaders\n";
 }
 
-//void NGLScene::resizeGL( QResizeEvent* _event )
-//{
-//  m_win.width  = static_cast<int>( _event->size().width() * devicePixelRatio() );
-//  m_win.height = static_cast<int>( _event->size().height() * devicePixelRatio() );
-//  // now set the camera size values as the screen size has changed
-//  m_cam.setShape( 45.0f, static_cast<float>( width() ) / height(), 0.05f, 350.0f );
-//}
+
 
 void NGLScene::resizeGL( int _w, int _h )
 {
