@@ -15,7 +15,17 @@ class MainWindow(QOpenGLWindow) :
     self.m_width=1024
     self.m_height=720
     self.setTitle('pyNGL demo')
-    
+    self.spinXFace = 0
+    self.spinYFace = 0
+    self.rotate = False
+    self.translate = False
+    self.origX = 0
+    self.origY = 0
+    self.origXPos = 0
+    self.origYPos = 0
+    self.INCREMENT=0.01
+    self.ZOOM=0.1
+    self.m_modelPos=Vec3()
 
   def initializeGL(self) :
     self.makeCurrent()
@@ -66,7 +76,6 @@ class MainWindow(QOpenGLWindow) :
     shader.setUniform( "MVP", MVP );
     shader.setUniform( "normalMatrix", normalMatrix );
     shader.setUniform( "M", M );
-    print normalMatrix
   
   def paintGL(self):
     glViewport( 0, 0, self.m_width, self.m_height )
@@ -75,6 +84,14 @@ class MainWindow(QOpenGLWindow) :
     shader.use('Phong')
     #shader.use('nglColourShader')
     #shader.setUniform('Colour',1.0,0.0,0.0,1.0)
+    rotX=Mat4();
+    rotY=Mat4();
+    rotX.rotateX( self.spinXFace );
+    rotY.rotateY( self.spinYFace );
+    self.m_mouseGlobalTX = rotY * rotX;
+    self.m_mouseGlobalTX.m_30  = self.m_modelPos.m_x;
+    self.m_mouseGlobalTX.m_31  = self.m_modelPos.m_y;
+    self.m_mouseGlobalTX.m_32  = self.m_modelPos.m_z;
     prim = VAOPrimitives.instance()
     self.loadMatricesToShader()
     prim.draw( "teapot" )
@@ -95,8 +112,59 @@ class MainWindow(QOpenGLWindow) :
       glPolygonMode(GL_FRONT_AND_BACK,GL_LINE)
     elif key==Qt.Key_S :
       glPolygonMode(GL_FRONT_AND_BACK,GL_FILL)
+    elif key==Qt.Key_Space :
+      self.spinXFace=0
+      self.spinYFace=0
+      self.m_modelPos.set(Vec3.zero())
     
     self.update()
+
+  def mouseMoveEvent(self, event) :
+    if self.rotate and event.buttons() == Qt.LeftButton  :
+      diffx = event.x() - self.origX
+      diffy = event.y() - self.origY
+      self.spinXFace += int( 0.5 * diffy )
+      self.spinYFace += int( 0.5 * diffx )
+      self.origX = event.x()
+      self.origY = event.y()
+      self.update()
+
+    elif  self.translate and event.buttons() == Qt.RightButton :
+
+      diffX      = int( event.x() - self.origXPos )
+      diffY      = int( event.y() - self.origYPos )
+      self.origXPos = event.x()
+      self.origYPos = event.y()
+      self.m_modelPos.m_x += self.INCREMENT * diffX;
+      self.m_modelPos.m_y -= self.INCREMENT * diffY;
+      self.update();
+
+  def mousePressEvent(self,event) :
+    if  event.button() == Qt.LeftButton :
+      self.origX  = event.x()
+      self.origY  = event.y()
+      self.rotate = True
+
+    elif  event.button() == Qt.RightButton :
+      self.origXPos  = event.x();
+      self.origYPos  = event.y();
+      self.translate = True
+
+  def mouseReleaseEvent(self,event) :
+    if  event.button() == Qt.LeftButton :
+      self.rotate = False
+
+    elif  event.button() == Qt.RightButton :
+      self.translate = False
+
+  def wheelEvent(self,event) :
+    if  event.angleDelta().x() > 0  :
+      self.m_modelPos.m_z += self.ZOOM
+
+    elif  event.angleDelta().x() < 0 :
+      self.m_modelPos.m_z -= self.ZOOM
+    self.update();
+
 
 if __name__ == '__main__':
   app = QApplication(sys.argv)
