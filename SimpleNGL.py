@@ -10,10 +10,10 @@ class MainWindow(QOpenGLWindow) :
   
   def __init__(self, parent=None):
     super(QOpenGLWindow, self).__init__(parent)
-    self.m_cam=Camera()
-    self.m_mouseGlobalTX=Mat4()
-    self.m_width=1024
-    self.m_height=720
+    self.cam=Camera()
+    self.mouseGlobalTX=Mat4()
+    self.width=1024
+    self.height=720
     self.setTitle('pyNGL demo')
     self.spinXFace = 0
     self.spinYFace = 0
@@ -25,7 +25,7 @@ class MainWindow(QOpenGLWindow) :
     self.origYPos = 0
     self.INCREMENT=0.01
     self.ZOOM=0.1
-    self.m_modelPos=Vec3()
+    self.modelPos=Vec3()
 
   def initializeGL(self) :
     self.makeCurrent()
@@ -34,29 +34,14 @@ class MainWindow(QOpenGLWindow) :
     glEnable( GL_DEPTH_TEST )
     glEnable( GL_MULTISAMPLE )
     shader=ShaderLib.instance()
-    #shader.loadShader('Phong','shaders/PhongVertex.glsl','shaders/PhongFragment.glsl')
-    shaderProgram = 'Phong'
-    vertexShader  = 'PhongVertex'
-    fragShader    = 'PhongFragment'
-    shader.createShaderProgram( shaderProgram );
-    shader.attachShader( vertexShader, ShaderType.VERTEX );
-    shader.attachShader( fragShader, ShaderType.FRAGMENT );
-    shader.loadShaderSource( vertexShader, "shaders/PhongVertex.glsl" );
-    shader.loadShaderSource( fragShader, "shaders/PhongFragment.glsl" );
-    shader.compileShader( vertexShader );
-    shader.compileShader( fragShader );
-    shader.attachShaderToProgram( shaderProgram, vertexShader );
-    shader.attachShaderToProgram( shaderProgram, fragShader );
-    shader.linkProgramObject( shaderProgram );
-
-
+    shader.loadShader('Phong','shaders/PhongVertex.glsl','shaders/PhongFragment.glsl')
     shader.use('Phong')
     m=Material(STDMAT.GOLD)
     m.loadToShader( "material" );
-    self.m_cam.set(Vec3(1,1,1),Vec3.zero(),Vec3.up())
-    self.m_cam.setShape( 45.0, 720.0 / 576.0, 0.05, 350.0 )
-    shader.setUniform( "viewerPos", self.m_cam.getEye().toVec3() )
-    iv = self.m_cam.getViewMatrix()
+    self.cam.set(Vec3(1,1,1),Vec3.zero(),Vec3.up())
+    self.cam.setShape( 45.0, 720.0 / 576.0, 0.05, 350.0 )
+    shader.setUniform( "viewerPos", self.cam.getEye().toVec3() )
+    iv = self.cam.getViewMatrix()
     iv.transpose()
     light=Light( Vec3( -2.0, 5.0, 2.0 ), Colour( 1.0, 1.0, 1.0, 1.0 ), Colour( 1.0, 1.0, 1.0, 1.0 ),LightModes.POINTLIGHT )
     light.setTransform( iv );
@@ -67,10 +52,10 @@ class MainWindow(QOpenGLWindow) :
     shader = ShaderLib.instance()
 
     normalMatrix=Mat3();
-    M            = self.m_mouseGlobalTX;
-    MV           = M * self.m_cam.getViewMatrix();
-    MVP          = M * self.m_cam.getVPMatrix();
-    #normalMatrix = Mat3(MV);
+    M            = self.mouseGlobalTX;
+    MV           = M * self.cam.getViewMatrix();
+    MVP          = M * self.cam.getVPMatrix();
+    normalMatrix = Mat3(MV);
     normalMatrix.inverse();
     shader.setUniform( "MV", MV );
     shader.setUniform( "MVP", MVP );
@@ -78,7 +63,7 @@ class MainWindow(QOpenGLWindow) :
     shader.setUniform( "M", M );
   
   def paintGL(self):
-    glViewport( 0, 0, self.m_width, self.m_height )
+    glViewport( 0, 0, self.width, self.height )
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT )
     shader=ShaderLib.instance()
     shader.use('Phong')
@@ -88,20 +73,19 @@ class MainWindow(QOpenGLWindow) :
     rotY=Mat4();
     rotX.rotateX( self.spinXFace );
     rotY.rotateY( self.spinYFace );
-    self.m_mouseGlobalTX = rotY * rotX;
-    self.m_mouseGlobalTX.m_30  = self.m_modelPos.m_x;
-    self.m_mouseGlobalTX.m_31  = self.m_modelPos.m_y;
-    self.m_mouseGlobalTX.m_32  = self.m_modelPos.m_z;
+    self.mouseGlobalTX = rotY * rotX;
+    self.mouseGlobalTX.m_30  = self.modelPos.m_x;
+    self.mouseGlobalTX.m_31  = self.modelPos.m_y;
+    self.mouseGlobalTX.m_32  = self.modelPos.m_z;
     prim = VAOPrimitives.instance()
     self.loadMatricesToShader()
     prim.draw( "teapot" )
 
   def resizeGL(self, w,h) :
-    self.m_width=int(w* self.devicePixelRatio())
-    self.m_height=int(h* self.devicePixelRatio())
-    self.m_cam.setShape( 45.0, float( w ) / h, 0.05, 350.0 )
+    self.width=int(w* self.devicePixelRatio())
+    self.height=int(h* self.devicePixelRatio())
+    self.cam.setShape( 45.0, float( w ) / h, 0.05, 350.0 )
 
-    print self.m_width,self.m_height
 
 
   def keyPressEvent(self, event) :
@@ -115,7 +99,7 @@ class MainWindow(QOpenGLWindow) :
     elif key==Qt.Key_Space :
       self.spinXFace=0
       self.spinYFace=0
-      self.m_modelPos.set(Vec3.zero())
+      self.modelPos.set(Vec3.zero())
     
     self.update()
 
@@ -135,8 +119,8 @@ class MainWindow(QOpenGLWindow) :
       diffY      = int( event.y() - self.origYPos )
       self.origXPos = event.x()
       self.origYPos = event.y()
-      self.m_modelPos.m_x += self.INCREMENT * diffX;
-      self.m_modelPos.m_y -= self.INCREMENT * diffY;
+      self.modelPos.m_x += self.INCREMENT * diffX;
+      self.modelPos.m_y -= self.INCREMENT * diffY;
       self.update();
 
   def mousePressEvent(self,event) :
@@ -158,11 +142,13 @@ class MainWindow(QOpenGLWindow) :
       self.translate = False
 
   def wheelEvent(self,event) :
-    if  event.angleDelta().x() > 0  :
-      self.m_modelPos.m_z += self.ZOOM
+    numPixels = event.pixelDelta();
 
-    elif  event.angleDelta().x() < 0 :
-      self.m_modelPos.m_z -= self.ZOOM
+    if  numPixels.x() > 0  :
+      self.modelPos.m_z += self.ZOOM
+
+    elif  numPixels.x() < 0 :
+      self.modelPos.m_z -= self.ZOOM
     self.update();
 
 
