@@ -111,8 +111,8 @@ void NGLScene::loadMatricesToShader()
   M            = m_mouseGlobalTX;
   MV           = M * m_cam.getViewMatrix();
   MVP          = M * m_cam.getVPMatrix();
-  normalMatrix = MV;
-  normalMatrix.inverse();
+ // normalMatrix = MV;
+ // normalMatrix.inverse();
   shader->setUniform( "MV", MV );
   shader->setUniform( "MVP", MVP );
   shader->setUniform( "normalMatrix", normalMatrix );
