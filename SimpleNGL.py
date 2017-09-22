@@ -53,10 +53,10 @@ class MainWindow(QOpenGLWindow) :
 
     normalMatrix=Mat3();
     M            = self.mouseGlobalTX;
-    MV           = M * self.cam.getViewMatrix();
-    MVP          = M * self.cam.getVPMatrix();
+    MV           = self.cam.getViewMatrix() * M;
+    MVP          = self.cam.getVPMatrix() * M;
     normalMatrix = Mat3(MV);
-    normalMatrix.inverse();
+    normalMatrix.inverse().transpose();
     shader.setUniform( "MV", MV );
     shader.setUniform( "MVP", MVP );
     shader.setUniform( "normalMatrix", normalMatrix );
