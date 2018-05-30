@@ -2,8 +2,6 @@
 #include <QGuiApplication>
 #include <QMouseEvent>
 
-#include <ngl/Camera.h>
-#include <ngl/Light.h>
 #include <ngl/Material.h>
 #include <ngl/NGLInit.h>
 #include <ngl/NGLStream.h>
@@ -26,7 +24,8 @@ NGLScene::~NGLScene()
 
 void NGLScene::resizeGL( int _w, int _h )
 {
-  m_cam.setShape( 45.0f, static_cast<float>( _w ) / _h, 0.05f, 350.0f );
+  m_projection=ngl::perspective( 65.0f, static_cast<float>( _w ) / _h, 0.05f, 350.0f );
+
   m_win.width  = static_cast<int>( _w * devicePixelRatio() );
   m_win.height = static_cast<int>( _h * devicePixelRatio() );
 }
@@ -83,20 +82,24 @@ void NGLScene::initializeGL()
   ngl::Vec3 to( 0, 0, 0 );
   ngl::Vec3 up( 0, 1, 0 );
   // now load to our new camera
-  m_cam.set( from, to, up );
+  m_view=ngl::lookAt(from,to,up);
   // set the shape using FOV 45 Aspect Ratio based on Width and Height
   // The final two are near and far clipping planes of 0.5 and 10
-  m_cam.setShape( 45.0f, 720.0f / 576.0f, 0.05f, 350.0f );
-  shader->setUniform( "viewerPos", m_cam.getEye().toVec3() );
+  m_projection=ngl::perspective(45.0f, 720.0f / 576.0f, 0.05f, 350.0f );
+  shader->setUniform( "viewerPos", from );
   // now create our light that is done after the camera so we can pass the
   // transpose of the projection matrix to the light to do correct eye space
   // transformations
-  ngl::Mat4 iv = m_cam.getViewMatrix();
+  ngl::Mat4 iv =m_view;
   iv.transpose();
-  ngl::Light light( ngl::Vec3( -2, 5, 2 ), ngl::Colour( 1, 1, 1, 1 ), ngl::Colour( 1, 1, 1, 1 ), ngl::LightModes::POINTLIGHT );
-  light.setTransform( iv );
-  // load these values to the shader as well
-  light.loadToShader( "light" );
+  ngl::Vec4 lightPos( -2.0f, 5.0f, 2.0f ,1.0f);
+  ngl::Vec4 pos=lightPos*iv;
+
+  shader->setUniform("light.position",pos);
+  shader->setUniform("light.ambient",0.0f,0.0f,0.0f,0.0f);
+  shader->setUniform("light.diffuse",1.0f,1.0f,1.0f,1.0f);
+  shader->setUniform("light.specular",1.0f,1.0f,1.0f,1.0f);
+
 }
 
 
@@ -109,8 +112,8 @@ void NGLScene::loadMatricesToShader()
   ngl::Mat3 normalMatrix;
   ngl::Mat4 M;
   M            = m_mouseGlobalTX;
-  MV           = m_cam.getViewMatrix() * M;
-  MVP          = m_cam.getVPMatrix() * M;
+  MV           = m_view * M;
+  MVP          = m_projection * MV;
 
   normalMatrix = MV;
   normalMatrix.inverse().transpose();
