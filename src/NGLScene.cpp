@@ -1,8 +1,6 @@
 #include "NGLScene.h"
 #include <QGuiApplication>
 #include <QMouseEvent>
-
-#include <ngl/Material.h>
 #include <ngl/NGLInit.h>
 #include <ngl/NGLStream.h>
 #include <ngl/ShaderLib.h>
@@ -82,14 +80,14 @@ void NGLScene::initializeGL()
   // setup the default shader material and light porerties
   // these are "uniform" so will retain their values
   shader->setUniform("lightPosition",m_lightPos.toVec3());
-  shader->setUniform("lightColor",200.0f,200.0f,200.0f);
-  shader->setUniform("exposure",1.0f);
+  shader->setUniform("lightColor",400.0f,400.0f,400.0f);
+  shader->setUniform("exposure",2.2f);
   shader->setUniform("albedo",0.950f, 0.71f, 0.29f);
 
-  shader->setUniform("metallic",1.0f);
-  shader->setUniform("roughness",0.35f);
+  shader->setUniform("metallic",1.02f);
+  shader->setUniform("roughness",0.38f);
   shader->setUniform("ao",0.2f);
-  ngl::VAOPrimitives::instance()->createTrianglePlane("floor",20,20,20,20,ngl::Vec3::up());
+  ngl::VAOPrimitives::instance()->createTrianglePlane("floor",20,20,1,1,ngl::Vec3::up());
 
   shader->use(ngl::nglCheckerShader);
   shader->setUniform("lightDiffuse",1.0f,1.0f,1.0f,1.0f);
@@ -157,7 +155,7 @@ void NGLScene::paintGL()
   prim->draw( "teapot" );
   shader->use(ngl::nglCheckerShader);
   ngl::Mat4 tx;
-  tx.translate(0.0f,-0.6f,0.0f);
+  tx.translate(0.0f,-0.5f,0.0f);
   ngl::Mat4 MVP=m_projection*m_view*tx*m_mouseGlobalTX;
   ngl::Mat3 normalMatrix=m_view*m_mouseGlobalTX;
   normalMatrix.inverse().transpose();
