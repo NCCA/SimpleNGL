@@ -155,8 +155,8 @@ void NGLScene::paintGL()
   prim->draw( "teapot" );
   shader->use(ngl::nglCheckerShader);
   ngl::Mat4 tx;
-  tx.translate(0.0f,-0.5f,0.0f);
-  ngl::Mat4 MVP=m_projection*m_view*tx*m_mouseGlobalTX;
+  tx.translate(0.0f,-0.45f,0.0f);
+  ngl::Mat4 MVP=m_projection*m_view*m_mouseGlobalTX*tx;
   ngl::Mat3 normalMatrix=m_view*m_mouseGlobalTX;
   normalMatrix.inverse().transpose();
   shader->setUniform("MVP",MVP);
