@@ -10,6 +10,7 @@ isEqual(QT_MAJOR_VERSION, 5) {
 	cache()
 	DEFINES +=QT5BUILD
 }
+
 # where to put moc auto generated files
 MOC_DIR=moc
 # on a mac we don't create a .app bundle file ( for ease of multiplatform use)
@@ -26,7 +27,7 @@ INCLUDEPATH +=./include
 # where our exe is going to live (root of project)
 DESTDIR=./
 # add the glsl shader files
-OTHER_FILES+= shaders/*.glsl \
+OTHER_FILES+= shaders/*.glsl  \
               README.md \
               SimpleNGL.py
 # were are going to default to a console app
