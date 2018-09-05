@@ -10,7 +10,6 @@ class MainWindow(QOpenGLWindow) :
   
   def __init__(self, parent=None):
     super(QOpenGLWindow, self).__init__(parent)
-    self.cam=Camera()
     self.mouseGlobalTX=Mat4()
     self.width=1024
     self.height=720
@@ -26,6 +25,8 @@ class MainWindow(QOpenGLWindow) :
     self.INCREMENT=0.01
     self.ZOOM=0.1
     self.modelPos=Vec3()
+    self.lightPos=Vec4()
+    self.transformLight=True
 
   def initializeGL(self) :
     self.makeCurrent()
@@ -34,57 +35,93 @@ class MainWindow(QOpenGLWindow) :
     glEnable( GL_DEPTH_TEST )
     glEnable( GL_MULTISAMPLE )
     shader=ShaderLib.instance()
-    shader.loadShader('Phong','shaders/PhongVertex.glsl','shaders/PhongFragment.glsl')
-    shader.use('Phong')
-    m=Material(STDMAT.GOLD)
-    m.loadToShader( "material" );
-    self.cam.set(Vec3(1,1,1),Vec3.zero(),Vec3.up())
-    self.cam.setShape( 45.0, 720.0 / 576.0, 0.05, 350.0 )
-    shader.setUniform( "viewerPos", self.cam.getEye().toVec3() )
-    iv = self.cam.getViewMatrix()
-    iv.transpose()
-    light=Light( Vec3( -2.0, 5.0, 2.0 ), Colour( 1.0, 1.0, 1.0, 1.0 ), Colour( 1.0, 1.0, 1.0, 1.0 ),LightModes.POINTLIGHT )
-    light.setTransform( iv );
-    light.loadToShader( 'light' )
+    shader.loadShader('PBR','shaders/PBRVertexPython.glsl','shaders/PBRFragment.glsl')
+    shader.use('PBR')
+
+    # We now create our view matrix for a static camera
+    From=Vec3(0.0, 2.0, 2.0 );
+    to  =Vec3( 0.0, 0.0, 0.0 );
+    up  =Vec3( 0.0, 1.0, 0.0 );
+    # now load to our new camera
+    self.view=lookAt(From,to,up);
+    shader.setUniform( 'camPos', From );
+    # now a light
+    self.lightPos.set( 0.0, 2.0, 2.0 ,1.0);
+    # setup the default shader material and light properties
+    # these are 'uniform' so will retain their values
+    shader.setUniform('lightPosition',self.lightPos.toVec3());
+    shader.setUniform('lightColor',400.0,400.0,400.0);
+    shader.setUniform('exposure',2.2);
+    shader.setUniform('albedo',0.950, 0.71, 0.29);
+
+    shader.setUniform('metallic',1.02);
+    shader.setUniform('roughness',0.38);
+    shader.setUniform('ao',0.2);
+    VAOPrimitives.instance().createTrianglePlane('floor',20,20,1,1,Vec3.up());
+
+    shader.use(nglCheckerShader);
+    shader.setUniform('lightDiffuse',1.0,1.0,1.0,1.0);
+    shader.setUniform('checkOn',True);
+    shader.setUniform('lightPos',self.lightPos.toVec3());
+    shader.setUniform('colour1',0.9,0.9,0.9,1.0);
+    shader.setUniform('colour2',0.6,0.6,0.6,1.0);
+    shader.setUniform('checkSize',60.0);
 
 
   def loadMatricesToShader(self) :
     shader = ShaderLib.instance()
+    shader.use("PBR")
+    M=self.view*self.mouseGlobalTX;
 
-    normalMatrix=Mat3();
-    M            = self.mouseGlobalTX;
-    MV           = self.cam.getViewMatrix() * M;
-    MVP          = self.cam.getVPMatrix() * M;
-    normalMatrix = Mat3(MV);
+    MVP=self.projection*M;
+    normalMatrix=M;
     normalMatrix.inverse().transpose();
-    shader.setUniform( "MV", MV );
-    shader.setUniform( "MVP", MVP );
-    shader.setUniform( "normalMatrix", normalMatrix );
-    shader.setUniform( "M", M );
+    shader.setUniform('M',M)
+    shader.setUniform('MVP',MVP)
+    shader.setUniform('normalMatrix',normalMatrix)
+    if self.transformLight == True :
+      shader.setUniform('lightPosition',(self.mouseGlobalTX*self.lightPos).toVec3())
+
+
   
   def paintGL(self):
-    glViewport( 0, 0, self.width, self.height )
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT )
-    shader=ShaderLib.instance()
-    shader.use('Phong')
-    #shader.use('nglColourShader')
-    #shader.setUniform('Colour',1.0,0.0,0.0,1.0)
-    rotX=Mat4();
-    rotY=Mat4();
-    rotX.rotateX( self.spinXFace );
-    rotY.rotateY( self.spinYFace );
-    self.mouseGlobalTX = rotY * rotX;
-    self.mouseGlobalTX.m_30  = self.modelPos.m_x;
-    self.mouseGlobalTX.m_31  = self.modelPos.m_y;
-    self.mouseGlobalTX.m_32  = self.modelPos.m_z;
-    prim = VAOPrimitives.instance()
-    self.loadMatricesToShader()
-    prim.draw( "teapot" )
+    try :
+      self.makeCurrent()
+      glViewport( 0, 0, self.width, self.height )
+      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT )
+      shader=ShaderLib.instance()
+      shader.use('PBR')
+      rotX=Mat4();
+      rotY=Mat4();
+      rotX.rotateX( self.spinXFace );
+      rotY.rotateY( self.spinYFace );
+      self.mouseGlobalTX = rotY * rotX;
+      self.mouseGlobalTX.m_30  = self.modelPos.m_x;
+      self.mouseGlobalTX.m_31  = self.modelPos.m_y;
+      self.mouseGlobalTX.m_32  = self.modelPos.m_z;
+      prim = VAOPrimitives.instance()
+      self.loadMatricesToShader()
+      prim.draw('teapot')
+      
+      shader.use(nglCheckerShader)
+      tx=Mat4()
+      tx.translate(0.0,-0.45,0.0)
+      MVP=self.projection*self.view*self.mouseGlobalTX*tx
+      normalMatrix=self.view*self.mouseGlobalTX
+      normalMatrix.inverse().transpose()
+      shader.setUniform("MVP",MVP)
+      shader.setUniform("normalMatrix",normalMatrix)
+      if self.transformLight :
+        shader.setUniform("lightPosition",(self.mouseGlobalTX*self.lightPos).toVec3())
+      prim.draw("floor")
+    except OpenGL.error.GLError :
+      print "error"
 
   def resizeGL(self, w,h) :
     self.width=int(w* self.devicePixelRatio())
     self.height=int(h* self.devicePixelRatio())
-    self.cam.setShape( 45.0, float( w ) / h, 0.05, 350.0 )
+    self.projection=perspective( 45.0, float( self.width  / self.height), 0.5, 20.0 )
+
 
 
 
