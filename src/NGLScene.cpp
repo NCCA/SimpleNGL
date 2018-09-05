@@ -20,7 +20,6 @@ NGLScene::~NGLScene()
 }
 
 
-
 void NGLScene::resizeGL( int _w, int _h )
 {
   m_projection=ngl::perspective( 45.0f, static_cast<float>( _w ) / _h, 0.5f, 20.0f );
@@ -147,7 +146,6 @@ void NGLScene::paintGL()
   m_mouseGlobalTX.m_m[ 3 ][ 0 ] = m_modelPos.m_x;
   m_mouseGlobalTX.m_m[ 3 ][ 1 ] = m_modelPos.m_y;
   m_mouseGlobalTX.m_m[ 3 ][ 2 ] = m_modelPos.m_z;
-
   // get the VBO instance and draw the built in teapot
   ngl::VAOPrimitives* prim = ngl::VAOPrimitives::instance();
   // draw
