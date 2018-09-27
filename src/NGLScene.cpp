@@ -1,11 +1,10 @@
 #include "NGLScene.h"
-#include <QGuiApplication>
-#include <QMouseEvent>
 #include <ngl/NGLInit.h>
 #include <ngl/NGLStream.h>
 #include <ngl/ShaderLib.h>
 #include <ngl/VAOPrimitives.h>
-#include <glm/glm.hpp>
+#include <QGuiApplication>
+#include <QMouseEvent>
 
 
 NGLScene::NGLScene()
@@ -22,7 +21,7 @@ NGLScene::~NGLScene()
 
 void NGLScene::resizeGL( int _w, int _h )
 {
-  m_projection=ngl::perspective( 45.0f, static_cast<float>( _w ) / _h, 0.5f, 20.0f );
+  m_projection=ngl::perspective( 45.0f, static_cast<float>( _w ) / _h, 0.1f, 200.0f );
 
   m_win.width  = static_cast<int>( _w * devicePixelRatio() );
   m_win.height = static_cast<int>( _h * devicePixelRatio() );
@@ -35,13 +34,13 @@ void NGLScene::initializeGL()
   // we must call that first before any other GL commands to load and link the
   // gl commands from the lib, if that is not done program will crash
   ngl::NGLInit::instance();
+  // uncomment this line to make ngl less noisy with debug info
+  // ngl::NGLInit::instance()->setCommunicationMode( ngl::CommunicationMode::NULLCONSUMER);
   glClearColor( 0.4f, 0.4f, 0.4f, 1.0f ); // Grey Background
   // enable depth testing for drawing
   glEnable( GL_DEPTH_TEST );
   // enable multisampling for smoother drawing
-  #ifndef USINGIOS_
-    glEnable( GL_MULTISAMPLE );
-  #endif
+  glEnable( GL_MULTISAMPLE );
   // now to load the shader and set the values
   // grab an instance of shader manager
   ngl::ShaderLib* shader = ngl::ShaderLib::instance();
@@ -87,7 +86,7 @@ void NGLScene::initializeGL()
   shader->setUniform("roughness",0.38f);
   shader->setUniform("ao",0.2f);
   ngl::VAOPrimitives::instance()->createTrianglePlane("floor",20,20,1,1,ngl::Vec3::up());
-
+  shader->printRegisteredUniforms(shaderProgram);
   shader->use(ngl::nglCheckerShader);
   shader->setUniform("lightDiffuse",1.0f,1.0f,1.0f,1.0f);
   shader->setUniform("checkOn",true);
@@ -95,6 +94,8 @@ void NGLScene::initializeGL()
   shader->setUniform("colour1",0.9f,0.9f,0.9f,1.0f);
   shader->setUniform("colour2",0.6f,0.6f,0.6f,1.0f);
   shader->setUniform("checkSize",60.0f);
+  shader->printRegisteredUniforms(ngl::nglCheckerShader);
+
 }
 
 

@@ -35,7 +35,7 @@ class MainWindow(QOpenGLWindow) :
     glEnable( GL_DEPTH_TEST )
     glEnable( GL_MULTISAMPLE )
     shader=ShaderLib.instance()
-    shader.loadShader('PBR','shaders/PBRVertexPython.glsl','shaders/PBRFragment.glsl')
+    shader.loadShader('PBR','shaders/PBRVertexPython.glsl','shaders/PBRFragment.glsl',ErrorExit.OFF)
     shader.use('PBR')
 
     # We now create our view matrix for a static camera
@@ -44,6 +44,7 @@ class MainWindow(QOpenGLWindow) :
     up  =Vec3( 0.0, 1.0, 0.0 );
     # now load to our new camera
     self.view=lookAt(From,to,up);
+    self.projection=perspective( 45.0, float( self.width  / self.height), 0.5, 20.0 )
     shader.setUniform( 'camPos', From );
     # now a light
     self.lightPos.set( 0.0, 2.0, 2.0 ,1.0);
@@ -58,15 +59,16 @@ class MainWindow(QOpenGLWindow) :
     shader.setUniform('roughness',0.38);
     shader.setUniform('ao',0.2);
     VAOPrimitives.instance().createTrianglePlane('floor',20,20,1,1,Vec3.up());
-
+    shader.printRegisteredUniforms('PBR')
     shader.use(nglCheckerShader);
     shader.setUniform('lightDiffuse',1.0,1.0,1.0,1.0);
-    shader.setUniform('checkOn',True);
+    shader.setUniform('checkOn',1);
     shader.setUniform('lightPos',self.lightPos.toVec3());
     shader.setUniform('colour1',0.9,0.9,0.9,1.0);
     shader.setUniform('colour2',0.6,0.6,0.6,1.0);
     shader.setUniform('checkSize',60.0);
-
+    shader.printRegisteredUniforms(nglCheckerShader)
+   
 
   def loadMatricesToShader(self) :
     shader = ShaderLib.instance()
@@ -107,22 +109,21 @@ class MainWindow(QOpenGLWindow) :
       tx=Mat4()
       tx.translate(0.0,-0.45,0.0)
       MVP=self.projection*self.view*self.mouseGlobalTX*tx
-      normalMatrix=self.view*self.mouseGlobalTX
+      normalMatrix=Mat3(self.view*self.mouseGlobalTX)
       normalMatrix.inverse().transpose()
       shader.setUniform("MVP",MVP)
       shader.setUniform("normalMatrix",normalMatrix)
       if self.transformLight :
         shader.setUniform("lightPosition",(self.mouseGlobalTX*self.lightPos).toVec3())
       prim.draw("floor")
+
     except OpenGL.error.GLError :
       print "error"
 
   def resizeGL(self, w,h) :
     self.width=int(w* self.devicePixelRatio())
     self.height=int(h* self.devicePixelRatio())
-    self.projection=perspective( 45.0, float( self.width  / self.height), 0.5, 20.0 )
-
-
+    self.projection=perspective( 45.0, float( self.width)  / self.height, 0.5, 20.0 )
 
 
   def keyPressEvent(self, event) :
