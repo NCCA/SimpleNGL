@@ -67,9 +67,9 @@ void NGLScene::initializeGL()
   // and make it active ready to load values
   ( *shader )[ shaderProgram ]->use();
  // We now create our view matrix for a static camera
-  ngl::Vec3 from( 0.0f, 2.0f, 2.0f );
-  ngl::Vec3 to( 0.0f, 0.0f, 0.0f );
-  ngl::Vec3 up( 0.0f, 1.0f, 0.0f );
+  ngl::Vec3 from{ 0.0f, 2.0f, 2.0f };
+  ngl::Vec3 to{ 0.0f, 0.0f, 0.0f };
+  ngl::Vec3 up{ 0.0f, 1.0f, 0.0f };
   // now load to our new camera
   m_view=ngl::lookAt(from,to,up);
   shader->setUniform( "camPos", from );
@@ -117,7 +117,7 @@ void NGLScene::loadMatricesToShader()
    t.normalMatrix=t.M;
    t.normalMatrix.inverse().transpose();
    shader->setUniformBuffer("TransformUBO",sizeof(transform),&t.MVP.m_00);
-
+  // ngl::msg->addMessage(fmt::format("size {0}",sizeof(transform)));
    if(m_transformLight)
    {
      shader->setUniform("lightPosition",(m_mouseGlobalTX*m_lightPos).toVec3());
