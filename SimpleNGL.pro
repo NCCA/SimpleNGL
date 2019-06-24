@@ -10,7 +10,6 @@ isEqual(QT_MAJOR_VERSION, 5) {
 	cache()
 	DEFINES +=QT5BUILD
 }
-
 # where to put moc auto generated files
 MOC_DIR=moc
 # on a mac we don't create a .app bundle file ( for ease of multiplatform use)
@@ -50,8 +49,10 @@ CONFIG += console
 }
 NGLPATH=$$(NGLDIR)
 isEmpty(NGLPATH){ # note brace must be here
-	message("including $HOME/NGL")
+        message("including $HOME/NGL")
 	include($(HOME)/NGL/UseNGL.pri)
+         win32:include($(HOMEDRIVE)\$(HOMEPATH)\NGL\UseNGL.pri)
+
 }
 else{ # note brace must be here
 	message("Using custom NGL location")
