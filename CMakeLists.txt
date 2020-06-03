@@ -1,11 +1,10 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.2)
 # Name of the project
-set(PROJECT_NAME SimpleNGL)
-project(${PROJECT_NAME})
+project(SimpleNGLBuild)
 #Bring the headers into the project (local ones)
 include_directories(include $ENV{HOME}/NGL/include)
 # use C++ 14
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 #the file(GLOB...) allows for wildcard additions of our src dir
 set(SOURCES ${PROJECT_SOURCE_DIR}/src/main.cpp  
 			${PROJECT_SOURCE_DIR}/src/NGLScene.cpp  
@@ -18,6 +17,7 @@ set(SOURCES ${PROJECT_SOURCE_DIR}/src/main.cpp
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	message("Mac build")
 	find_library(MACGL OpenGL)
+	add_definitions(-DGL_SCILENCE_DEPRICATION)
 	set ( PROJECT_LINK_LIBS -lNGL ${MACGL})
 
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -35,13 +35,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
 
-add_definitions(-O2) 
-
 
 # now add NGL specific values
 link_directories( $ENV{HOME}/NGL/lib )
-# as NGL uses Qt we need to define that flag
-add_definitions(-DQT5BUILD)
 # NGL also needs the OpenGL framework from Qt so add it
 find_package(Qt5OpenGL)
 find_package(Qt5Widgets)
@@ -49,6 +45,11 @@ find_package(Qt5Gui)
 find_package(Qt5Core)
 
 # add exe and link libs that must be after the other defines
-add_executable(${PROJECT_NAME} ${SOURCES})
-target_link_libraries(${PROJECT_NAME} ${PROJECT_LINK_LIBS} Qt5::OpenGL Qt5::Core Qt5::Gui Qt5::Widgets )
+add_executable(SimpleNGL ${SOURCES})
+target_link_libraries(SimpleNGL PRIVATE ${PROJECT_LINK_LIBS}  Qt5::OpenGL Qt5::Core Qt5::Gui Qt5::Widgets )
 
+add_custom_target(CopyShaders ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/shaders
+    ${CMAKE_BINARY_DIR}/shaders
+    )
