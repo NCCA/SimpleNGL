@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.2)
 project(SimpleNGLBuild)
 #Bring the headers into the project (local ones)
 include_directories(include $ENV{HOME}/NGL/include)
+include_directories(include $ENV{HOME}/NGL/gl3w)
 # use C++ 14
 set(CMAKE_CXX_STANDARD 17)
 #the file(GLOB...) allows for wildcard additions of our src dir
@@ -43,10 +44,11 @@ find_package(Qt5OpenGL)
 find_package(Qt5Widgets)
 find_package(Qt5Gui)
 find_package(Qt5Core)
+find_package(fmt)
 
 # add exe and link libs that must be after the other defines
 add_executable(SimpleNGL ${SOURCES})
-target_link_libraries(SimpleNGL PRIVATE ${PROJECT_LINK_LIBS}  Qt5::OpenGL Qt5::Core Qt5::Gui Qt5::Widgets )
+target_link_libraries(SimpleNGL PRIVATE ${PROJECT_LINK_LIBS}  Qt5::OpenGL Qt5::Core Qt5::Gui Qt5::Widgets fmt::fmt-header-only )
 
 add_custom_target(CopyShaders ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
