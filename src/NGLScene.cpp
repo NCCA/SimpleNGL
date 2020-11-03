@@ -33,7 +33,7 @@ void NGLScene::initializeGL()
 {
   // we must call that first before any other GL commands to load and link the
   // gl commands from the lib, if that is not done program will crash
-  ngl::NGLInit::instance();
+  ngl::NGLInit::initalize();
   // uncomment this line to make ngl less noisy with debug info
   // ngl::NGLInit::instance()->setCommunicationMode( ngl::CommunicationMode::NULLCONSUMER);
   glClearColor( 0.4f, 0.4f, 0.4f, 1.0f ); // Grey Background
@@ -43,66 +43,63 @@ void NGLScene::initializeGL()
   glEnable( GL_MULTISAMPLE );
   // now to load the shader and set the values
   // grab an instance of shader manager
-  ngl::ShaderLib* shader = ngl::ShaderLib::instance();
-  // we are creating a shader called PBR to save typos
   // in the code create some constexpr
   constexpr auto vertexShader  = "PBRVertex";
   constexpr auto fragShader    = "PBRFragment";
   // create the shader program
-  shader->createShaderProgram( shaderProgram );
+  ngl::ShaderLib::createShaderProgram( shaderProgram );
   // now we are going to create empty shaders for Frag and Vert
-  shader->attachShader( vertexShader, ngl::ShaderType::VERTEX );
-  shader->attachShader( fragShader, ngl::ShaderType::FRAGMENT );
+  ngl::ShaderLib::attachShader( vertexShader, ngl::ShaderType::VERTEX );
+  ngl::ShaderLib::attachShader( fragShader, ngl::ShaderType::FRAGMENT );
   // attach the source
-  shader->loadShaderSource( vertexShader, "shaders/PBRVertex.glsl" );
-  shader->loadShaderSource( fragShader, "shaders/PBRFragment.glsl" );
+  ngl::ShaderLib::loadShaderSource( vertexShader, "shaders/PBRVertex.glsl" );
+  ngl::ShaderLib::loadShaderSource( fragShader, "shaders/PBRFragment.glsl" );
   // compile the shaders
-  shader->compileShader( vertexShader );
-  shader->compileShader( fragShader );
+  ngl::ShaderLib::compileShader( vertexShader );
+  ngl::ShaderLib::compileShader( fragShader );
   // add them to the program
-  shader->attachShaderToProgram( shaderProgram, vertexShader );
-  shader->attachShaderToProgram( shaderProgram, fragShader );
+  ngl::ShaderLib::attachShaderToProgram( shaderProgram, vertexShader );
+  ngl::ShaderLib::attachShaderToProgram( shaderProgram, fragShader );
   // now we have associated that data we can link the shader
-  shader->linkProgramObject( shaderProgram );
+  ngl::ShaderLib::linkProgramObject( shaderProgram );
   // and make it active ready to load values
-  ( *shader )[ shaderProgram ]->use();
+  ngl::ShaderLib::use(shaderProgram );
  // We now create our view matrix for a static camera
   ngl::Vec3 from{ 0.0f, 2.0f, 2.0f };
   ngl::Vec3 to{ 0.0f, 0.0f, 0.0f };
   ngl::Vec3 up{ 0.0f, 1.0f, 0.0f };
   // now load to our new camera
   m_view=ngl::lookAt(from,to,up);
-  shader->setUniform( "camPos", from );
+  ngl::ShaderLib::setUniform( "camPos", from );
   // now a light
   m_lightPos.set( 0.0, 2.0f, 2.0f ,1.0f);
   // setup the default shader material and light porerties
   // these are "uniform" so will retain their values
-  shader->setUniform("lightPosition",m_lightPos.toVec3());
-  shader->setUniform("lightColor",400.0f,400.0f,400.0f);
-  shader->setUniform("exposure",2.2f);
-  shader->setUniform("albedo",0.950f, 0.71f, 0.29f);
+  ngl::ShaderLib::setUniform("lightPosition",m_lightPos.toVec3());
+  ngl::ShaderLib::setUniform("lightColor",400.0f,400.0f,400.0f);
+  ngl::ShaderLib::setUniform("exposure",2.2f);
+  ngl::ShaderLib::setUniform("albedo",0.950f, 0.71f, 0.29f);
 
-  shader->setUniform("metallic",1.02f);
-  shader->setUniform("roughness",0.38f);
-  shader->setUniform("ao",0.2f);
-  ngl::VAOPrimitives::instance()->createTrianglePlane("floor",20,20,1,1,ngl::Vec3::up());
-  shader->printRegisteredUniforms(shaderProgram);
-  shader->use(ngl::nglCheckerShader);
-  shader->setUniform("lightDiffuse",1.0f,1.0f,1.0f,1.0f);
-  shader->setUniform("checkOn",true);
-  shader->setUniform("lightPos",m_lightPos.toVec3());
-  shader->setUniform("colour1",0.9f,0.9f,0.9f,1.0f);
-  shader->setUniform("colour2",0.6f,0.6f,0.6f,1.0f);
-  shader->setUniform("checkSize",60.0f);
-  shader->printRegisteredUniforms(ngl::nglCheckerShader);
+  ngl::ShaderLib::setUniform("metallic",1.02f);
+  ngl::ShaderLib::setUniform("roughness",0.38f);
+  ngl::ShaderLib::setUniform("ao",0.2f);
+  ngl::VAOPrimitives::createTrianglePlane("floor",20,20,1,1,ngl::Vec3::up());
+  ngl::ShaderLib::printRegisteredUniforms(shaderProgram);
+  ngl::ShaderLib::use(ngl::nglCheckerShader);
+  ngl::ShaderLib::setUniform("lightDiffuse",1.0f,1.0f,1.0f,1.0f);
+  ngl::ShaderLib::setUniform("checkOn",true);
+  ngl::ShaderLib::setUniform("lightPos",m_lightPos.toVec3());
+  ngl::ShaderLib::setUniform("colour1",0.9f,0.9f,0.9f,1.0f);
+  ngl::ShaderLib::setUniform("colour2",0.6f,0.6f,0.6f,1.0f);
+  ngl::ShaderLib::setUniform("checkSize",60.0f);
+  ngl::ShaderLib::printRegisteredUniforms(ngl::nglCheckerShader);
 
 }
 
 
 void NGLScene::loadMatricesToShader()
 {
-  ngl::ShaderLib* shader = ngl::ShaderLib::instance();
-  shader->use("PBR");
+  ngl::ShaderLib::use("PBR");
   struct transform
   {
     ngl::Mat4 MVP;
@@ -116,11 +113,11 @@ void NGLScene::loadMatricesToShader()
    t.MVP=m_projection*t.M;
    t.normalMatrix=t.M;
    t.normalMatrix.inverse().transpose();
-   shader->setUniformBuffer("TransformUBO",sizeof(transform),&t.MVP.m_00);
+   ngl::ShaderLib::setUniformBuffer("TransformUBO",sizeof(transform),&t.MVP.m_00);
   // ngl::msg->addMessage(fmt::format("size {0}",sizeof(transform)));
    if(m_transformLight)
    {
-     shader->setUniform("lightPosition",(m_mouseGlobalTX*m_lightPos).toVec3());
+     ngl::ShaderLib::setUniform("lightPosition",(m_mouseGlobalTX*m_lightPos).toVec3());
 
    }
 }
@@ -132,8 +129,7 @@ void NGLScene::paintGL()
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
   // grab an instance of the shader manager
-  ngl::ShaderLib* shader = ngl::ShaderLib::instance();
-  ( *shader )[ "PBR" ]->use();
+  ngl::ShaderLib::use("PBR");
 
   // Rotation based on the mouse position for our global transform
   ngl::Mat4 rotX;
@@ -148,24 +144,23 @@ void NGLScene::paintGL()
   m_mouseGlobalTX.m_m[ 3 ][ 1 ] = m_modelPos.m_y;
   m_mouseGlobalTX.m_m[ 3 ][ 2 ] = m_modelPos.m_z;
   // get the VBO instance and draw the built in teapot
-  ngl::VAOPrimitives* prim = ngl::VAOPrimitives::instance();
   // draw
   loadMatricesToShader();
-  prim->draw( "teapot" );
-  shader->use(ngl::nglCheckerShader);
+  ngl::VAOPrimitives::draw( "teapot" );
+  ngl::ShaderLib::use(ngl::nglCheckerShader);
   ngl::Mat4 tx;
   tx.translate(0.0f,-0.45f,0.0f);
   ngl::Mat4 MVP=m_projection*m_view*m_mouseGlobalTX*tx;
   ngl::Mat3 normalMatrix=m_view*m_mouseGlobalTX;
   normalMatrix.inverse().transpose();
-  shader->setUniform("MVP",MVP);
-  shader->setUniform("normalMatrix",normalMatrix);
+  ngl::ShaderLib::setUniform("MVP",MVP);
+  ngl::ShaderLib::setUniform("normalMatrix",normalMatrix);
   if(m_transformLight)
   {
-    shader->setUniform("lightPosition",(m_mouseGlobalTX*m_lightPos).toVec3());
+    ngl::ShaderLib::setUniform("lightPosition",(m_mouseGlobalTX*m_lightPos).toVec3());
 
   }
-  prim->draw("floor");
+  ngl::VAOPrimitives::draw("floor");
 
 }
 
