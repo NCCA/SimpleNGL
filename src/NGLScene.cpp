@@ -33,7 +33,7 @@ void NGLScene::initializeGL()
 {
   // we must call that first before any other GL commands to load and link the
   // gl commands from the lib, if that is not done program will crash
-  ngl::NGLInit::initalize();
+  ngl::NGLInit::initialize();
   // uncomment this line to make ngl less noisy with debug info
   // ngl::NGLInit::instance()->setCommunicationMode( ngl::CommunicationMode::NULLCONSUMER);
   glClearColor( 0.4f, 0.4f, 0.4f, 1.0f ); // Grey Background
