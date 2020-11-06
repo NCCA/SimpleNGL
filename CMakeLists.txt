@@ -47,4 +47,4 @@ add_custom_target(CopyShaders ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/shaders
     ${CMAKE_BINARY_DIR}/shaders
-    )
+    ) 
