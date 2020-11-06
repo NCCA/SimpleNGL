@@ -39,9 +39,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	message("Mac build")
 	find_library(MACGL OpenGL)
 	add_definitions(-DGL_SCILENCE_DEPRICATION)
-	set ( PROJECT_LINK_LIBS ${MACGL})
+	set ( PROJECT_LINK_LIBS ${MACGL} NGL)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	set ( PROJECT_LINK_LIBS -lGL)
+	set ( PROJECT_LINK_LIBS -lGL NGL)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	include_directories(include $ENV{HOMEDRIVE}/$ENV{HOMEPATH}/NGL/include)
 	link_directories($ENV{HOMEDRIVE}/$ENV{HOMEPATH}/NGL/lib)	
@@ -50,7 +50,6 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	add_compile_definitions(NOMINMAX)
 	# Need to define this when building shared library or suffer dllimport errors
 	add_compile_definitions(BUILDING_DLL)
-
 endif()
 
 # now add NGL specific values
