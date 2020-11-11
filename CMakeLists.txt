@@ -70,8 +70,8 @@ target_link_libraries(${TargetName} PRIVATE OpenImageIO::OpenImageIO OpenImageIO
 target_link_libraries(${TargetName} PRIVATE ${PROJECT_LINK_LIBS}  Qt5::Widgets fmt::fmt-header-only freetype )
 
 
-add_custom_target(CopyShaders ALL
+add_custom_target(${TargetName}CopyShaders ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/shaders
     $<TARGET_FILE_DIR:${TargetName}>/shaders
-) 
+)
