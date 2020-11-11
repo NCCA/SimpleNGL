@@ -67,7 +67,7 @@ target_link_directories(${TargetName} PRIVATE $ENV{HOME}/NGL/lib )
 
 # add exe and link libs that must be after the other defines
 target_link_libraries(${TargetName} PRIVATE OpenImageIO::OpenImageIO OpenImageIO::OpenImageIO_Util)
-target_link_libraries(${TargetName} PRIVATE ${PROJECT_LINK_LIBS}  Qt5::Widgets fmt::fmt-header-only  )
+target_link_libraries(${TargetName} PRIVATE ${PROJECT_LINK_LIBS}  Qt5::Widgets fmt::fmt-header-only freetype )
 
 
 add_custom_target(CopyShaders ALL
