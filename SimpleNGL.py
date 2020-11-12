@@ -40,13 +40,12 @@ class MainWindow(QOpenGLWindow) :
 
   def initializeGL(self) :
     self.makeCurrent()
-    NGLInit.instance()
+    NGLInit.initialize()
     glClearColor( 0.4, 0.4, 0.4, 1.0 ) 
     glEnable( GL_DEPTH_TEST )
     glEnable( GL_MULTISAMPLE )
-    shader=ShaderLib.instance()
-    shader.loadShader('PBR','shaders/PBRVertexPython.glsl','shaders/PBRFragment.glsl',ErrorExit.OFF)
-    shader.use('PBR')
+    ShaderLib.loadShader('PBR','shaders/PBRVertexPython.glsl','shaders/PBRFragment.glsl',ErrorExit.OFF)
+    ShaderLib.use('PBR')
 
     # We now create our view matrix for a static camera
     From=Vec3(0.0, 2.0, 2.0 ) 
@@ -55,34 +54,33 @@ class MainWindow(QOpenGLWindow) :
     # now load to our new camera
     self.view=lookAt(From,to,up) 
     self.projection=perspective( 45.0, float( self.width  / self.height), 0.5, 20.0 )
-    shader.setUniform( 'camPos', From ) 
+    ShaderLib.setUniform( 'camPos', From ) 
     # now a light
     self.lightPos.set( 0.0, 2.0, 2.0 ,1.0) 
     # setup the default shader material and light properties
     # these are 'uniform' so will retain their values
-    shader.setUniform('lightPosition',self.lightPos.toVec3()) 
-    shader.setUniform('lightColor',400.0,400.0,400.0) 
-    shader.setUniform('exposure',2.2) 
-    shader.setUniform('albedo',0.950, 0.71, 0.29) 
+    ShaderLib.setUniform('lightPosition',self.lightPos.toVec3()) 
+    ShaderLib.setUniform('lightColor',400.0,400.0,400.0) 
+    ShaderLib.setUniform('exposure',2.2) 
+    ShaderLib.setUniform('albedo',0.950, 0.71, 0.29) 
 
-    shader.setUniform('metallic',1.02) 
-    shader.setUniform('roughness',0.38) 
-    shader.setUniform('ao',0.2) 
-    VAOPrimitives.instance().createTrianglePlane('floor',20,20,1,1,Vec3.up()) 
-    shader.printRegisteredUniforms('PBR')
-    shader.use(nglCheckerShader) 
-    shader.setUniform('lightDiffuse',1.0,1.0,1.0,1.0) 
-    shader.setUniform('checkOn',1) 
-    shader.setUniform('lightPos',self.lightPos.toVec3()) 
-    shader.setUniform('colour1',0.9,0.9,0.9,1.0) 
-    shader.setUniform('colour2',0.6,0.6,0.6,1.0) 
-    shader.setUniform('checkSize',60.0) 
-    shader.printRegisteredUniforms(nglCheckerShader)
+    ShaderLib.setUniform('metallic',1.02) 
+    ShaderLib.setUniform('roughness',0.38) 
+    ShaderLib.setUniform('ao',0.2) 
+    VAOPrimitives.createTrianglePlane('floor',20,20,1,1,Vec3.up()) 
+    ShaderLib.printRegisteredUniforms('PBR')
+    ShaderLib.use(nglCheckerShader) 
+    ShaderLib.setUniform('lightDiffuse',1.0,1.0,1.0,1.0) 
+    ShaderLib.setUniform('checkOn',1) 
+    ShaderLib.setUniform('lightPos',self.lightPos.toVec3()) 
+    ShaderLib.setUniform('colour1',0.9,0.9,0.9,1.0) 
+    ShaderLib.setUniform('colour2',0.6,0.6,0.6,1.0) 
+    ShaderLib.setUniform('checkSize',60.0) 
+    ShaderLib.printRegisteredUniforms(nglCheckerShader)
    
 
   def loadMatricesToShader(self) :
-    shader = ShaderLib.instance()
-    shader.use('PBR')
+    ShaderLib.use('PBR')
 
     # ubo=UBO()
 
@@ -94,21 +92,19 @@ class MainWindow(QOpenGLWindow) :
     MVP=self.projection*M
     normalMatrix=M
     normalMatrix.inverse().transpose() 
-    shader.setUniform('M',M)
-    shader.setUniform('MVP',MVP)
-    shader.setUniform('normalMatrix',normalMatrix)
-    #shader.setUniformBuffer('TransformUBO',len(ubo),ubo.MVP)
+    ShaderLib.setUniform('M',M)
+    ShaderLib.setUniform('MVP',MVP)
+    ShaderLib.setUniform('normalMatrix',normalMatrix)
+    #ShaderLib.setUniformBuffer('TransformUBO',len(ubo),ubo.MVP)
     if self.transformLight == True :
-      shader.setUniform('lightPosition',(self.mouseGlobalTX*self.lightPos).toVec3())
-    shader.printRegisteredUniforms('PBR')
+      ShaderLib.setUniform('lightPosition',(self.mouseGlobalTX*self.lightPos).toVec3())
     
   def paintGL(self):
     try :
       self.makeCurrent()
       glViewport( 0, 0, self.width, self.height )
       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT )
-      shader=ShaderLib.instance()
-      shader.use('PBR')
+      ShaderLib.use('PBR')
       rotX=Mat4() 
       rotY=Mat4() 
       rotX.rotateX( self.spinXFace ) 
@@ -117,21 +113,18 @@ class MainWindow(QOpenGLWindow) :
       self.mouseGlobalTX.m_30  = self.modelPos.m_x 
       self.mouseGlobalTX.m_31  = self.modelPos.m_y 
       self.mouseGlobalTX.m_32  = self.modelPos.m_z 
-      prim = VAOPrimitives.instance()
       self.loadMatricesToShader()
-      prim.draw('teapot')
+      VAOPrimitives.draw('teapot')
       
-      shader.use(nglCheckerShader)
+      ShaderLib.use(nglCheckerShader)
       tx=Mat4()
       tx.translate(0.0,-0.45,0.0)
       MVP=self.projection*self.view*self.mouseGlobalTX*tx
       normalMatrix=Mat3(self.view*self.mouseGlobalTX)
       normalMatrix.inverse().transpose()
-      shader.setUniform('MVP',MVP)
-      shader.setUniform('normalMatrix',normalMatrix)
-      if self.transformLight :
-        shader.setUniform('lightPosition',(self.mouseGlobalTX*self.lightPos).toVec3())
-      prim.draw('floor')
+      ShaderLib.setUniform('MVP',MVP)
+      ShaderLib.setUniform('normalMatrix',normalMatrix)
+      VAOPrimitives.draw('floor')
 
     except OpenGL.error.GLError :
       print 'error'
