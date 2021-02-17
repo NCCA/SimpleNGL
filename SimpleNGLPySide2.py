@@ -1,7 +1,7 @@
-#!/usr/bin/env python
-from PyQt5.QtGui import QOpenGLWindow,QSurfaceFormat
-from PyQt5.QtWidgets import QApplication
-from  PyQt5.QtCore import *
+#!/usr/bin/python
+from PySide2.QtGui import QOpenGLWindow,QSurfaceFormat
+from PySide2.QtWidgets import QApplication
+from  PySide2.QtCore import *
 import sys
 from pyngl import *
 from OpenGL.GL import *
@@ -19,11 +19,11 @@ class UBO() :
 class MainWindow(QOpenGLWindow) :
   
   def __init__(self, parent=None):
-    super(QOpenGLWindow, self).__init__(parent)
+    super(MainWindow, self).__init__(parent)
     self.mouseGlobalTX=Mat4()
     self.width=int(1024)
     self.height=int(720)
-    self.setTitle('pyNGL demo')
+    self.setTitle('PySide2-pyNGL demo')
     self.spinXFace = int(0)
     self.spinYFace = int(0)
     self.rotate = False
