@@ -10,21 +10,24 @@ void NGLScene::mouseMoveEvent( QMouseEvent* _event )
   // pressed when the mousePress/Release event is generated
   if ( m_win.rotate && _event->buttons() == Qt::LeftButton )
   {
-    int diffx = _event->x() - m_win.origX;
-    int diffy = _event->y() - m_win.origY;
+    auto position=_event->position();
+    int diffx = position.x() - m_win.origX;
+    int diffy = position.y() - m_win.origY;
     m_win.spinXFace += static_cast<int>( 0.5f * diffy );
     m_win.spinYFace += static_cast<int>( 0.5f * diffx );
-    m_win.origX = _event->x();
-    m_win.origY = _event->y();
+    m_win.origX = position.x();
+    m_win.origY = position.y();
     update();
   }
   // right mouse translate code
   else if ( m_win.translate && _event->buttons() == Qt::RightButton )
   {
-    int diffX      = static_cast<int>( _event->x() - m_win.origXPos );
-    int diffY      = static_cast<int>( _event->y() - m_win.origYPos );
-    m_win.origXPos = _event->x();
-    m_win.origYPos = _event->y();
+    auto position=_event->position();
+
+    int diffX      = static_cast<int>( position.x() - m_win.origXPos );
+    int diffY      = static_cast<int>( position.y() - m_win.origYPos );
+    m_win.origXPos = position.x();
+    m_win.origYPos = position.y();
     m_modelPos.m_x += INCREMENT * diffX;
     m_modelPos.m_y -= INCREMENT * diffY;
     update();
@@ -39,15 +42,18 @@ void NGLScene::mousePressEvent( QMouseEvent* _event )
   // store the value where the maouse was clicked (x,y) and set the Rotate flag to true
   if ( _event->button() == Qt::LeftButton )
   {
-    m_win.origX  = _event->x();
-    m_win.origY  = _event->y();
-    m_win.rotate = true;
+    auto position=_event->position();
+    m_win.origX  = position.x();
+    m_win.origY  = position.y();
+    m_win.rotate = true; 
   }
   // right mouse translate mode
   else if ( _event->button() == Qt::RightButton )
   {
-    m_win.origXPos  = _event->x();
-    m_win.origYPos  = _event->y();
+   auto position=_event->position();
+
+    m_win.origXPos  = position.x();
+    m_win.origYPos  = position.y();
     m_win.translate = true;
   }
 }
