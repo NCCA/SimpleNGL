@@ -9,7 +9,7 @@
 
 NGLScene::NGLScene()
 {
-  setTitle( "Qt5 Simple NGL Demo" );
+  setTitle( "Qt6 Simple NGL Demo" );
 }
 
 
