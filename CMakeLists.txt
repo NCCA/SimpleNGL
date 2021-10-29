@@ -22,7 +22,7 @@ find_package(NGL CONFIG REQUIRED)
 # Instruct CMake to run moc automatically when needed (Qt projects only)
 set(CMAKE_AUTOMOC ON)
 # find Qt libs first we check for Version 6
-find_package(Qt6 COMPONENTS OpenGL Widgets )
+find_package(Qt6 COMPONENTS OpenGL Widgets QUIET )
 if ( Qt6_FOUND )
     message("Found Qt6 Using that")
 else()
