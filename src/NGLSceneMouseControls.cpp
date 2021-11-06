@@ -83,3 +83,4 @@ void NGLScene::wheelEvent( QWheelEvent* _event )
   }
   update();
 }
+  
