@@ -45,7 +45,9 @@ target_sources(${TargetName} PRIVATE ${PROJECT_SOURCE_DIR}/src/main.cpp
 )
 
 target_link_libraries(${TargetName} PRIVATE  NGL Qt::Widgets Qt::OpenGL)
-
+if ( NOT Qt6_FOUND )
+    target_link_libraries(${TargetName} PRIVATE  Qt::OpenGLWidgets )
+endif()
 add_custom_target(${TargetName}CopyShaders ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/shaders
