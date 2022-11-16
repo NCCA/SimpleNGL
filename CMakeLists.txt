@@ -35,7 +35,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 # Set the name of the executable we want to build
 add_executable(${TargetName})
-add_compile_options(-arch x86_64)
 # Add NGL include path
 include_directories(include $ENV{HOME}/NGL/include)
 target_sources(${TargetName} PRIVATE ${PROJECT_SOURCE_DIR}/src/main.cpp  
